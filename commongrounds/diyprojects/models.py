@@ -1,15 +1,17 @@
 from django.db import models
 
+
 class ProjectCategory(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
 
     def __str__(self):
-        return self.name        
-    
+        return self.name
+
     class Meta:
         ordering = ['name']
         verbose_name_plural = "project categories"
+
 
 class Project(models.Model):
     title = models.CharField(max_length=255)
@@ -22,7 +24,7 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
-    
+
     class Meta:
         ordering = ['-created_on']
         verbose_name_plural = "projects"
