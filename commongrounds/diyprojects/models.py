@@ -9,6 +9,7 @@ class ProjectCategory(models.Model):
     
     class Meta:
         ordering = ['name']
+        verbose_name_plural = "project categories"
 
 class Project(models.Model):
     title = models.CharField(max_length=255)
@@ -20,7 +21,8 @@ class Project(models.Model):
     updated_on = models.DateTimeField(auto_now=True, auto_now_add=False)
 
     def __str__(self):
-        return f"{self.title} created on {self.created_on}."
+        return self.title
     
     class Meta:
         ordering = ['-created_on']
+        verbose_name_plural = "projects"
