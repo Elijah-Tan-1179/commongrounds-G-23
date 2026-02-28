@@ -1,0 +1,15 @@
+{% extends 'diyprojects/base.html' %}
+
+{% block title %}{{project.title}}{% endblock %}
+
+{% block body %}
+    <a href="{% url 'project_list'%}">
+        <li>Back to Project List</li>
+    </a>
+    <h2>{{project.title}}</h2>
+    <p><b>Category: </b>{{project.category.name}}</p>
+    <p><b>Materials: </b>{{project.materials}}</p>
+    <p><b>Steps: </b>{{project.steps}}</p>
+    <b>Created on: </b>{{project.created_on}} <br>
+    <b>Last updated on: </b>{{project.updated_on}}
+{% endblock %}
