@@ -15,7 +15,7 @@ class Genre(models.Model):
         # for sorting genres in alphabetical order (ascending)
         ordering = ['name']
 
-    def __string__(self):
+    def __str__(self):
         # return string representation of the genre name
         return self.name
     
@@ -40,9 +40,9 @@ class Book(models.Model):
     
     genre = models.ForeignKey(
         Genre, 
-        on_name='books', 
         on_delete=models.SET_NULL,
-        null=True
+        null=True,
+        related_name='books'
     )
     author = models.CharField(max_length=255)
     publication_year = models.IntegerField()
@@ -50,7 +50,7 @@ class Book(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-publication year']
+        ordering = ['-publication_year']
 
     def __string__(self):
         # return string representation of the book title

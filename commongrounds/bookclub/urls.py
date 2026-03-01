@@ -8,9 +8,9 @@ app_name = 'bookclub'
 urlpatterns = [
 
     # route for the list of all books via (URL: /bookclub/books)
-    path('books/', BookListView.as_view(), name='book_list'),
+    path('books/', BookListView.as_view(), name='book-list'),
 
     # route for a specific book's details using its primary key
-    path('books/<int:pk>/', BookDetailView.as_view(), name='book_detail'),
+    path('books/<int:pk>/', BookDetailView.as_view(), name='book-detail'),
 
 ]
