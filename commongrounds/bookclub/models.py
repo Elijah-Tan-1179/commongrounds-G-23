@@ -28,8 +28,9 @@ class Book(models.Model):
         2. Book genre (Based on the Genre Model; If the genre is 
         deleted, this field is NULL)
         3. Book author
-        4. Timestamp of when the book entry was first created.
-        5. Timestamp of the last time the book entry was modified.
+        4. Book publication year
+        5. Timestamp of when the book entry was first created.
+        6. Timestamp of the last time the book entry was modified.
     """
     title = models.CharField(max_length=255)
     """
