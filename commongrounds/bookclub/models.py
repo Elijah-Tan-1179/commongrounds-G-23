@@ -52,6 +52,6 @@ class Book(models.Model):
     class Meta:
         ordering = ['-publication_year']
 
-    def __string__(self):
+    def __str__(self):
         # return string representation of the book title
         return self.title

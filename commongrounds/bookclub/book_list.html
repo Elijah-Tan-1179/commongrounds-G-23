@@ -1,0 +1,8 @@
+<h1>Book Club List</h1>
+<ul>
+  {% for book in books %}
+    <li>{{ book.title }} by {{ book.author }} ({{ book.publication_year }})</li>
+  {% empty %}
+    <li>No books added yet.</li>
+  {% endfor %}
+</ul>
