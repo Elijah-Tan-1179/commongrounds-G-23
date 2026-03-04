@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Club - List</title>
+</head>
+<body>
+    <h1>Book Club</h1>
+    <ul>
+        {% for book in books %}
+            <li>
+                <a href="{% url 'bookclub:book-detail' book.pk %}">
+                    {{ book.title }}
+                </a> 
+                by {{ book.author }} ({{ book.publication_year }})
+            </li>
+        {% empty %}
+            <li>No books have been added to the club yet.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
