@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ book.title }} - Details</title>
+</head>
+<body>
+    <h1>{{ book.title }}</h1>
+    <p><strong>Author:</strong> {{ book.author }}</p>
+    <p><strong>Genre:</strong> {{ book.genre.name|default:"No Genre" }}</p>
+    <p><strong>Published:</strong> {{ book.publication_year }}</p>
+    <hr>
+    <p><strong>Genre Description:</strong> {{ book.genre.description }}</p>
+    <br>
+    <a href="{% url 'bookclub:book-list' %}">Back to List</a>
+</body>
+</html>
