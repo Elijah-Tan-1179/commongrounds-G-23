@@ -11,7 +11,12 @@ class EventTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ['title', 'category', 'location', 'start_time', 'end_time', 'created_on']
+    list_display = ['title',
+                    'category',
+                    'location',
+                    'start_time',
+                    'end_time',
+                    'created_on']
     list_filter = ['category', 'start_time', 'created_on']
     search_fields = ['title', 'description', 'location']
     date_hierarchy = 'start_time'

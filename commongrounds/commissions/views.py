@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Commission
 
+
 # List view for commission model
 def commission_list(request):
 
@@ -15,6 +16,7 @@ def commission_list(request):
         "commissions/commission_list.html",
         context,
     )
+
 
 # Detail view for commission model
 def commission_detail(request, pk):

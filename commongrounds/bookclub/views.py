@@ -5,24 +5,25 @@ from .models import Book
 
 class BookListView(ListView):
     """
-    Renders a list of all books stored in the database. 
+    Renders a list of all books stored in the database.
 
     Context:
         books: A query of all books, ordered by publication
-        year. 
+        year.
 
     Template:
         bookclub/book_list.html
     """
-    model = Book # used as wrapper for book metadata
+    model = Book  # used as wrapper for book metadata
     template_name = 'bookclub/book_list.html'
     context_object_name = 'books'
 
-class BookDetailView(DetailView): 
-    """
-    Renders the information for a specific book. 
 
-    Context: 
+class BookDetailView(DetailView):
+    """
+    Renders the information for a specific book.
+
+    Context:
         book: The specific book, which is identified by the URL
         primary key
 
@@ -32,4 +33,3 @@ class BookDetailView(DetailView):
     model = Book
     template_name = 'bookclub/book_detail.html'
     context_object_name = 'book'
-

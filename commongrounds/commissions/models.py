@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Model containing commission TYPE
 class CommissionType(models.Model):
     name = models.CharField(max_length=255)
@@ -10,6 +11,7 @@ class CommissionType(models.Model):
 
     def __str__(self):
         return self.name
+
 
 # Model containing the commission REQUEST
 class Commission(models.Model):
