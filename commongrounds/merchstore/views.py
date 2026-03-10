@@ -1,4 +1,5 @@
-from .models import ProductType, Product
+from .models import ProductType
+from .models import Product
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
