@@ -14,3 +14,5 @@ urlpatterns = [
     path('books/<int:pk>/', BookDetailView.as_view(), name='book-detail'),
 
 ]
+
+# book list can be accessed via http://127.0.0.1:8000/bookclub/books/

@@ -7,9 +7,9 @@ is needed so that actual books can be added into the
 website.
 
 Admin panel can be accessed with the following details: 
-1. username: Zachary
+1. username: zachary246208
 2. email address:  zachary.linus.ong@student.ateneo.edu
-3. password: 123456789
+3. password: liklik
 """
 
 @admin.register(Genre)
