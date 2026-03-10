@@ -1,7 +1,6 @@
 from django.urls import path
 from django.shortcuts import redirect
-from .views import ProductListView
-from .views import ProductDetailView
+from .views import ProductListView, ProductDetailView
 
 
 urlpatterns = [
