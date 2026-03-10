@@ -23,5 +23,5 @@ urlpatterns = [
     #path('localevents/', include('localevents.urls')),
     path('bookclub/', include('bookclub.urls')),
     #path('diyprojects/', include('diyprojects.urls')),
-    #path('commissions/', include('commissions.urls')),
+    path("commissions/", include("commissions.urls")),
 ]
