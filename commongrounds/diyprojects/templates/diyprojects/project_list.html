@@ -1,0 +1,23 @@
+{% extends 'diyprojects/base.html' %}
+
+{% block title %}Project List{% endblock %}
+
+{% block body %}
+    <h1>Project List</h1>
+    <hr>
+    {% for category in projectcategory_list %}
+        <h2>{{category}}</h2>
+        <p>{{category.description}}</p> 
+        <p><b>Projects under this category: </b></p>
+        <ul>
+            {% for project in category.project_set.all %}
+                <a href="{% url 'project_detail' project.pk %}">
+                <li>{{project}}</li>
+                </a>
+            {% empty %}
+                <li>No projects in this category.</li>
+            {% endfor %}
+        </ul>
+        <hr>
+    {% endfor %}
+{% endblock %}
