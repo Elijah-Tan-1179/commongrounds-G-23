@@ -1,5 +1,7 @@
 from django.views.generic import ListView, DetailView
+
 from .models import Book
+
 
 class BookListView(ListView):
     """

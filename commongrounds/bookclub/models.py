@@ -1,5 +1,6 @@
 from django.db import models # for bundling metadata
 
+
 class Genre(models.Model):
     """
     Represents a category of books. Has the following
@@ -8,6 +9,8 @@ class Genre(models.Model):
         1. Has a uniqe genre name
         2. Has a description without word limit
     """
+
+
     name = models.CharField(max_length=255)
     description = models.TextField()
 
@@ -32,7 +35,11 @@ class Book(models.Model):
         5. Timestamp of when the book entry was first created.
         6. Timestamp of the last time the book entry was modified.
     """
+
+
     title = models.CharField(max_length=255)
+
+    
     """
     Using 'on_delete=models.SET_NULL' as requested to preserve book
     data even if a category is removed. 
