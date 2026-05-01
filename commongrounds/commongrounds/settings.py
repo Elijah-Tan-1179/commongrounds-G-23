@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #'merchstore',
     #'localevents',
+    'accounts', 
     'bookclub',
     #'diyprojects',
     #'commissions',
