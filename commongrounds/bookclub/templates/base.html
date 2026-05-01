@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Common Grounds{% endblock %}</title>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'homepage' %}">Home</a> |
+        <a href="{% url 'bookclub:book-list' %}">Book Club</a> |
+        {% if user.is_authenticated %}
+            <span>Hello, {{ user.profile.display_name }}</span> |
+            <form method="POST" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </nav>
+    <hr>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

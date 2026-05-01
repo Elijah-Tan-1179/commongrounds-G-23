@@ -1,16 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ book.title }} - Details</title>
-</head>
-<body>
-    <h1>{{ book.title }}</h1>
-    <p><strong>Author:</strong> {{ book.author }}</p>
-    <p><strong>Genre:</strong> {{ book.genre.name|default:"No Genre" }}</p>
-    <p><strong>Published:</strong> {{ book.publication_year }}</p>
-    <hr>
-    <p><strong>Genre Description:</strong> {{ book.genre.description }}</p>
-    <br>
-    <a href="{% url 'bookclub:book-list' %}">Back to List</a>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ book.title }}</h1>
+<p><strong>Author:</strong> {{ book.author }}</p>
+<p><strong>Status:</strong> 
+    {% if book.available_to_borrow %} 
+        <span style="color:green;">Available</span> 
+    {% else %} 
+        <span style="color:red;">On Loan</span> 
+    {% endif %}
+</p>
+
+<!-- Ownership-based Editing -->
+{% if user.profile == book.contributor %}
+    <a href="{% url 'bookclub:book-edit' book.pk %}">Edit Book Details</a>
+{% endif %}
+
+<hr>
+<h3>Reviews ({{ book.reviews.count }})</h3>
+<ul>
+    {% for review in book.reviews.all %}
+        <li>
+            <strong>{{ review.title }}</strong> - 
+            by {% if review.user_reviewer %}{{ review.user_reviewer.display_name }}{% else %}Anonymous{% endif %}
+            <p>{{ review.comment }}</p>
+        </li>
+    {% endfor %}
+</ul>
+
+<hr>
+<!-- Review Form via Factory -->
+<h4>Leave a Review</h4>
+<form method="POST">
+    {% csrf_token %}
+    {{ review_form.as_p }}
+    <button type="submit">Submit Review</button>
+</form>
+
+<hr>
+<a href="{% url 'bookclub:book-borrow' book.pk %}">
+    <button {% if not book.available_to_borrow %}disabled{% endif %}>Borrow This Book</button>
+</a>
+{% endblock %}

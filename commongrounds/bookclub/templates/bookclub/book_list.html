@@ -1,21 +1,35 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Book Club - List</title>
-</head>
-<body>
-    <h1>Book Club</h1>
+{% extends 'base.html' %}
+{% block content %}
+<h1>Book Club</h1>
+<a href="{% url 'bookclub:book-add' %}">+ Contribute a Book</a>
+
+{% if user.is_authenticated %}
+    <h3>Your Contributions</h3>
     <ul>
-        {% for book in books %}
-            <li>
-                <a href="{% url 'bookclub:book-detail' book.pk %}">
-                    {{ book.title }}
-                </a> 
-                by {{ book.author }} ({{ book.publication_year }})
-            </li>
+        {% for book in contributed_books %}
+            <li><a href="{% url 'bookclub:book-detail' book.pk %}">{{ book.title }}</a></li>
         {% empty %}
-            <li>No books have been added to the club yet.</li>
+            <li>You haven't contributed any books yet.</li>
         {% endfor %}
     </ul>
-</body>
-</html>
+
+    <h3>Your Bookmarks</h3>
+    <ul>
+        {% for book in bookmarked_books %}
+            <li><a href="{% url 'bookclub:book-detail' book.pk %}">{{ book.title }}</a></li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<h3>All Books</h3>
+<ul>
+    {% for book in all_books %}
+        <li>
+            <a href="{% url 'bookclub:book-detail' book.pk %}">{{ book.title }}</a> 
+            by {{ book.author }} ({{ book.publication_year }})
+        </li>
+    {% empty %}
+        <li>No other books available.</li>
+    {% endfor %}
+</ul>
+{% endblock %}
