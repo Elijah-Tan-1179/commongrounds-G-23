@@ -1,20 +1,15 @@
 from django.urls import path
+from .views import (
+    BookListView, BookDetailView, BookCreateView, 
+    BookUpdateView, BookBorrowView
+)
 
-
-from .views import BookListView, BookDetailView
-
-
-# Namespace for the app to allow reverse URL lookups
 app_name = 'bookclub'
 
 urlpatterns = [
-
-    # route for the list of all books via (URL: /bookclub/books)
     path('books/', BookListView.as_view(), name='book-list'),
-
-    # route for a specific book's details using its primary key
-    path('books/<int:pk>/', BookDetailView.as_view(), name='book-detail'),
-
+    path('book/<int:pk>/', BookDetailView.as_view(), name='book-detail'),
+    path('book/add/', BookCreateView.as_view(), name='book-add'),
+    path('book/<int:pk>/edit/', BookUpdateView.as_view(), name='book-edit'),
+    path('book/<int:pk>/borrow/', BookBorrowView.as_view(), name='book-borrow'),
 ]
-
-# book list can be accessed via http://127.0.0.1:8000/bookclub/books/
