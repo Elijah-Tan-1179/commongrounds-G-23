@@ -4,7 +4,8 @@
 
 {% block body %}
     <h1>Project List</h1>
-    <a href="{% url 'diyprojects:project_create' %}">+ Add a Project</a>
+    <a href="{% url 'home' %}">Back to home</a><br>
+    <a href="{% url 'diyprojects:project_create' %}">Add a Project</a>
     <hr>
 
     {% if user.is_authenticated %}

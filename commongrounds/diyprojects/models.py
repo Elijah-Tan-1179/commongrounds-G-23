@@ -55,7 +55,7 @@ class ProjectReview(models.Model):
     reviewer = models.ForeignKey(Profile, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     comment = models.TextField()
-    image = models.ImageField()
+    image = models.ImageField(upload_to='images/', null=True)
 
     def __str__(self):
         return f"{self.reviewer.display_name} commented: {self.comment}"

@@ -4,7 +4,7 @@ from django.views.generic.edit import UpdateView
 from .models import Profile
 from .forms import ProfileUpdateForm
 from django.urls import reverse_lazy
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
@@ -16,7 +16,7 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         return Profile.objects.get(user__username=self.kwargs.get('username'))
 
     def get_success_url(self):
-        return reverse_lazy('profile-detail', kwargs={'username': self.object.user.username})
+        return reverse_lazy('home')
 
 
 class RoleRequiredMixin(AccessMixin):
@@ -28,3 +28,7 @@ class RoleRequiredMixin(AccessMixin):
         if not self.required_role or request.user.profile.role != self.required_role:
             return redirect('accounts:permission_denied')
         return super().dispatch(request, *args, **kwargs)
+
+
+def permission_denied(request):
+    return render(request, 'accounts/permission_denied.html')
