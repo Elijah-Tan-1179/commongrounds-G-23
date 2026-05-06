@@ -4,20 +4,47 @@
 
 {% block body %}
     <h1>Project List</h1>
+    <a href="{% url 'diyprojects:project_create' %}">+ Add a Project</a>
     <hr>
-    {% for category in projectcategory_list %}
-        <h2>{{category}}</h2>
-        <p>{{category.description}}</p> 
-        <p><b>Projects under this category: </b></p>
-        <ul>
-            {% for project in category.project_set.all %}
-                <a href="{% url 'project_detail' project.pk %}">
-                <li>{{project}}</li>
-                </a>
-            {% empty %}
-                <li>No projects in this category.</li>
-            {% endfor %}
-        </ul>
-        <hr>
-    {% endfor %}
+
+    {% if user.is_authenticated %}
+        {% if created_projects %}
+            <h2>Projects created</h2>
+            <ul>
+                {% for project in created_projects %}
+                    <li><a href="{% url 'diyprojects:project_detail' project.pk %}">{{ project.title }}</a></li>
+                {% endfor %}
+            </ul>
+            <hr>
+        {% endif %}
+
+        {% if favorited_projects %}
+            <h2>Projects favorited</h2>
+            <ul>
+                {% for project in favorited_projects %}
+                    <li><a href="{% url 'diyprojects:project_detail' project.pk %}">{{ project.title }}</a></li>
+                {% endfor %}
+            </ul>
+            <hr>
+        {% endif %}
+
+        {% if reviewed_projects %}
+            <h2>Projects reviewed</h2>
+            <ul>
+                {% for project in reviewed_projects %}
+                    <li><a href="{% url 'diyprojects:project_detail' project.pk %}">{{ project.title }}</a></li>
+                {% endfor %}
+            </ul>
+            <hr>
+        {% endif %}
+    {% endif %}
+
+    <h2>All Projects</h2>
+    <ul>
+        {% for project in all_projects %}
+            <li><a href="{% url 'diyprojects:project_detail' project.pk %}">{{ project.title }}</a></li>
+        {% empty %}
+            <li>No projects yet.</li>
+        {% endfor %}
+    </ul>
 {% endblock %}
