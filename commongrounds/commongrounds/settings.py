@@ -76,6 +76,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'commongrounds.wsgi.application'
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://commongrounds-g-23-production.up.railway.app'
+]
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
