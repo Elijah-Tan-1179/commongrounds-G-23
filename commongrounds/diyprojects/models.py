@@ -1,4 +1,5 @@
 from django.db import models
+from accounts.models import Profile
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
@@ -43,18 +44,38 @@ class Favorite(models.Model):
     date_favorited = models.DateField()
     project_status = models.CharField(max_length=7, choices=project_status_choices)
 
+    def __str__(self):
+        return f"{self.project.title} favorited by {self.profile.user.username}. Status: {self.project_status}"
+    
+    class Meta:
+        verbose_name_plural = "favorites"
+
 
 class ProjectReview(models.Model):
     reviewer = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     comment = models.TextField()
     image = models.ImageField()
+
+    def __str__(self):
+        return f"{self.reviewer.display_name} commented: {self.comment}"
+
+    class Meta:
+        verbose_name_plural = "project reviews"
 
 
 class ProjectRating(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     score = models.IntegerField(
         validators=[
             MinValueValidator(1),
             MaxValueValidator(10)
         ]
     )
+
+    def __str__(self):
+        return f"{self.profile.display_name} score on {self.project.title}: {self.score}"
+    
+    class Meta:
+        verbose_name_plural = "project ratings"
