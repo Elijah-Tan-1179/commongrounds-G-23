@@ -1,8 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import AccessMixin
 from django.views.generic.edit import UpdateView
 from .models import Profile
 from .forms import ProfileUpdateForm
 from django.urls import reverse_lazy
+from django.shortcuts import redirect
 
 
 class ProfileUpdateView(LoginRequiredMixin, UpdateView):
@@ -15,3 +17,14 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('profile-detail', kwargs={'username': self.object.user.username})
+
+
+class RoleRequiredMixin(AccessMixin):
+    required_role = None
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+        if not self.required_role or request.user.profile.role != self.required_role:
+            return redirect('accounts:permission_denied')
+        return super().dispatch(request, *args, **kwargs)
