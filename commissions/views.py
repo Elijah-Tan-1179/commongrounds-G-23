@@ -16,7 +16,7 @@ class CommissionListView(ListView):
             context['applied_commissions'] = Commission.objects.filter(jobs__applications__applicant=profile).distinct()
         return context
 
-# for thje variables
+# for the variables
 class CommissionDetailView(DetailView):
     model = Commission
     template_name = 'commissions/detail.html'
@@ -28,5 +28,5 @@ class CommissionDetailView(DetailView):
         return context
 
     def post(self, request, *args, **kwargs):
-        # Handle Job Application logic using CommissionService.apply_to_job
+        # handles job logic
         pass
