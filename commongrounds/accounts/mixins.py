@@ -8,7 +8,7 @@ class RoleRequiredMixin(AccessMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
-        if not self.required_role or request.user.profile.role != self.required_role:
+        if not self.required_role or not request.user.profile.roles.filter(name=self.required_role).exists():
             return redirect('accounts:permission_denied')
         return super().dispatch(request, *args, **kwargs)
     
