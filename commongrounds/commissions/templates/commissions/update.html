@@ -1,57 +1,34 @@
-<h1>Manage Commission: {{ object.title }}</h1>
+{% extends 'commissions/base.html' %}
+{% block content %}
+
+<h1>Update Commission</h1>
 
 <form method="post">
     {% csrf_token %}
-    <section border="1" style="padding: 10px; margin-bottom: 20px;">
-        <h3>Commission Details</h3>
-        {{ form.as_p }}
-    </section>
+    {{ form.as_p }}
+    <hr>
 
-    <h3>Manage Jobs & Personnel</h3>
+    <h2>Edit Jobs</h2>
+
     {{ job_formset.management_form }}
     {% for job_form in job_formset %}
-        <div style="border: 1px solid black; padding: 15px; margin-bottom: 15px;">
-            {{ job_form.as_p }}
-            {% if job_form.instance.pk %}
-                <h4>Applicants for {{ job_form.instance.role }}</h4>
-                <table width="100%" border="1">
-                    <thead>
-                        <tr>
-                            <th>Applicant</th>
-                            <th>Status</th>
-                            <th>Applied On</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for app in job_form.instance.applications.all %}
-                        <tr>
-                            <td>{{ app.applicant.display_name }}</td>
-                            <td>{{ app.status }}</td>
-                            <td>{{ app.applied_on|date:"M d, Y" }}</td>
-                            <td>
-                                {% if app.status == "Pending" %}
-                                <form method="post" style="display:inline;">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="application_id" value="{{ app.id }}">
-                                    <button type="submit" name="new_status" value="Accepted">Accept</button>
-                                    <button type="submit" name="new_status" value="Rejected">Reject</button>
-                                </form>
-                                {% else %}
-                                {{ app.status }}
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% endif %}
-        </div>
+        {{ job_form.as_p }}
+        {% if job_form.instance.pk %}
+
+            <p>
+                Delete:
+                {{ job_form.DELETE }}
+            </p>
+
+        {% endif %}
+
+        <hr>
     {% endfor %}
 
-    <button type="submit" style="background-color: blue; color: white; padding: 10px;">
-        Update Commission and Jobs
+    <button type="submit">
+        Save Changes
     </button>
+
 </form>
 
-<p><a href="{{ object.get_absolute_url }}">Back to Detail View</a></p>
+{% endblock %}

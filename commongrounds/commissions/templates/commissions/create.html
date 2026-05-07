@@ -1,17 +1,25 @@
-<h2>{% if object %}Edit{% else %}Create{% endif %} Commission</h2>
+{% extends 'commissions/base.html' %}
+{% block content %}
+<h1>Create Commission</h1>
 
 <form method="post">
     {% csrf_token %}
-    <h3>Commission Details</h3>
     {{ form.as_p }}
+    <hr>
 
-    <h3>Jobs Required</h3>
+    <h2>Jobs</h2>
+
     {{ job_formset.management_form }}
     {% for job_form in job_formset %}
-        <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-            {{ job_form.as_p }}
-        </div>
+        {{ job_form.as_p }}
+
+    <hr>
+        
     {% endfor %}
 
-    <button type="submit">Save Commission</button>
+    <button type="submit">
+        Create Commission
+    </button>
+
 </form>
+{% endblock %}

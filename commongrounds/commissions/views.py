@@ -50,15 +50,23 @@ class CommissionDetailView(DetailView):
     template_name = 'commissions/detail.html'
     context_object_name = 'commission'
 
+    # changed to counting tye
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        summary = (
-            CommissionService.get_commission_summary(
-                self.object
-            )
+        summary = CommissionService.get_commission_summary(
+            self.object
         )
 
         context.update(summary)
+        accepted_counts = {}
+
+        for job in self.object.jobs.all():
+
+            accepted_counts[job.id] = job.applications.filter(
+                status='Accepted'
+            ).count()
+
+        context['accepted_counts'] = accepted_counts
         return context
 
 

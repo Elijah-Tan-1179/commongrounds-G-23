@@ -1,35 +1,109 @@
+{% extends 'commissions/base.html' %}
+
+{% block content %}
+
 <h1>{{ commission.title }}</h1>
-<p>Type: {{ commission.type.name }}</p>
-<p>Status: {{ commission.status }}</p>
+
 <p>{{ commission.description }}</p>
 
-<h3>Manpower Summary</h3>
-<ul>
-    <li>Total Manpower Required: {{ summary.total_manpower }}</li>
-    <li>Open Manpower: {{ summary.open_manpower }}</li>
-</ul>
+<p>
+    Type:
+    {{ commission.type }}
+</p>
 
-<h3>Jobs Available</h3>
-<ul>
-    {% for job in commission.jobs.all %}
-        <li>
-            <strong>{{ job.role }}</strong> - {{ job.status }} 
-            (Requires: {{ job.manpower_required }})
-            
-            {% if user.is_authenticated and commission.maker != user.profile %}
-                <form method="post" action="">
-                    {% csrf_token %}
-                    <input type="hidden" name="job_id" value="{{ job.id }}">
-                    
-                    {# Logic to disable button if job is full #}
-                    <button type="submit" 
-                        {% if job.status == "Full" %}disabled{% endif %}>
-                        Apply to Job
+<p>
+    Status:
+    {{ commission.status }}
+</p>
+
+<p>
+    Total manpower:
+    {{ total_manpower }}
+</p>
+
+<p>
+    Open manpower:
+    {{ open_manpower }}
+</p>
+
+{% if user.is_authenticated %}
+
+    {% if user.profile == commission.maker %}
+
+        <a href="{% url 'commissions:commission_update' commission.id %}">
+            Edit Commission
+        </a>
+
+    {% endif %}
+
+{% endif %}
+
+<hr>
+
+<h2>Jobs</h2>
+
+{% for item in jobs_with_status %}
+
+    <div>
+
+        <h3>
+            {{ item.job.role }}
+        </h3>
+
+        <p>
+            Status:
+            {{ item.job.status }}
+        </p>
+
+        <p>
+            Required:
+            {{ item.job.manpower_required }}
+        </p>
+
+        <p>
+            Accepted:
+            {{ item.accepted_count }}
+        </p>
+
+        {% if user.is_authenticated %}
+
+            {% if user.profile != commission.maker %}
+                {% if item.is_full %}
+                    <button disabled>
+                        Job Full
                     </button>
-                </form>
-            {% elif commission.maker == user.profile %}
-                <a href="{% url 'commissions:commission_update' commission.pk %}">Edit Commission</a>
+
+                {% else %}
+                    <form
+                        method="post"
+                        action="{% url 'commissions:apply_to_job' item.job.id %}"
+                    >
+
+                        {% csrf_token %}
+
+                        <button type="submit">
+                            Apply to Job
+                        </button>
+
+                    </form>
+                {% endif %}
             {% endif %}
-        </li>
-    {% endfor %}
-</ul>
+        {% else %}
+
+            <p>
+                Login to apply.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+    <hr>
+
+{% empty %}
+
+    <p>No jobs available.</p>
+
+{% endfor %}
+
+{% endblock %}
