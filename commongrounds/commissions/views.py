@@ -1,78 +1,164 @@
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from accounts.mixins import RoleRequiredMixin
-from .models import Commission, Job
+from .models import Commission, Job, JobApplication
 from .forms import CommissionForm, JobFormSet
 from .services import CommissionService
 
-# LIST view
+
 class CommissionListView(ListView):
     model = Commission
-    template_name = 'commissions/list.html'
+    template_name = 'commissions/commission_list.html'
     context_object_name = 'commissions'
-    queryset = Commission.objects.order_by('status', '-created_on')
+
+    def get_queryset(self):
+        return Commission.objects.all().order_by(
+            'status',
+            '-created_on'
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            profile = self.request.user.profile
-            context['user_created'] = Commission.objects.filter(maker=profile)
-            context['user_applied'] = Commission.objects.filter(
+        user = self.request.user
+        if user.is_authenticated:
+            profile = user.profile
+            created = Commission.objects.filter(
+                maker=profile
+            )
+            applied = Commission.objects.filter(
                 jobs__applications__applicant=profile
             ).distinct()
+
+            all_commissions = (
+                self.get_queryset()
+                .exclude(id__in=created)
+                .exclude(id__in=applied)
+            )
+
+            context['created_commissions'] = created
+            context['applied_commissions'] = applied
+            context['all_commissions'] = all_commissions
         return context
 
-# DETAILS view
+
 class CommissionDetailView(DetailView):
     model = Commission
-    template_name = 'commissions/detail.html'
+    template_name = (
+        'commissions/commission_detail.html'
+    )
+
+    context_object_name = 'commission'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['summary'] = CommissionService.get_commission_summary(self.object)
-        return context
-    def post(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect('login')
-        
-        job_id = request.POST.get('job_id')
-        job = Job.objects.get(id=job_id)
-        CommissionService.apply_to_job(request.user.profile, job)
-        return redirect('commissions:detail', pk=self.get_object().pk)
+        summary = (
+            CommissionService.get_commission_summary(
+                self.object
+            )
+        )
 
-class CommissionCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
+        context.update(summary)
+        return context
+
+
+class CommissionCreateView(
+    LoginRequiredMixin,
+    RoleRequiredMixin,
+    CreateView
+):
+
+    required_role = 'Commission Maker'
     model = Commission
     form_class = CommissionForm
-    template_name = 'commissions/create.html'
-    required_role = 'Commission Maker'
+    template_name = (
+        'commissions/commission_form.html'
+    )
 
     def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        data['job_formset'] = JobFormSet(self.request.POST or None)
-        return data
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['job_formset'] = JobFormSet(
+                self.request.POST
+            )
+        else:
+            context['job_formset'] = JobFormSet()
+        return context
 
     def form_valid(self, form):
         context = self.get_context_data()
         job_formset = context['job_formset']
         if job_formset.is_valid():
-            self.object = CommissionService.create_commission(
-                # reqs for bllal
-                author=self.request.user.profile,
-                data=form.cleaned_data,
-                jobs_data=[f.cleaned_data for f in job_formset if f.cleaned_data]
-            )
-            return redirect(self.object.get_absolute_url())
-        return self.render_to_response(self.get_context_data(form=form))
+            jobs_data = []
 
-class CommissionUpdateView(RoleRequiredMixin, LoginRequiredMixin, UpdateView):
+            for job_form in job_formset:
+
+                if job_form.cleaned_data:
+                    jobs_data.append({
+                        'role': job_form.cleaned_data['role'],
+                        'manpower_required': (
+                            job_form.cleaned_data[
+                                'manpower_required'
+                            ]
+                        ),
+                        'status': (
+                            job_form.cleaned_data['status']
+                        ),
+                    })
+
+            commission = (
+                CommissionService.create_commission(
+                    author=self.request.user.profile,
+                    data=form.cleaned_data,
+                    jobs_data=jobs_data
+                )
+            )
+            return redirect(
+                commission.get_absolute_url()
+            )
+        
+        return self.form_invalid(form)
+
+
+class CommissionUpdateView(
+    LoginRequiredMixin,
+    RoleRequiredMixin,
+    UpdateView
+):
+    required_role = 'Commission Maker'
     model = Commission
     form_class = CommissionForm
-    template_name = 'commissions/update.html'
-    required_role = 'Commission Maker'
+    template_name = (
+        'commissions/commission_form.html'
+    )
 
-# FORM DONT MISPELL
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        CommissionService.sync_commission_status(self.object)
-        return response
+    def get_success_url(self):
+
+        CommissionService.sync_commission_status(
+            self.object
+        )
+        return self.object.get_absolute_url()
+
+
+@login_required
+def apply_to_job(request, job_id):
+    job = get_object_or_404(Job, id=job_id)
+    try:
+        CommissionService.apply_to_job(
+            applicant=request.user.profile,
+            job=job
+        )
+
+        messages.success(
+            request,
+            'Successfully applied.'
+        )
+
+    except ValueError as error:
+        messages.error(request, str(error))
+    return redirect(
+        'commissions:commission_detail',
+        pk=job.commission.pk
+    )
