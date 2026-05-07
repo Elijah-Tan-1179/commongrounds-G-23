@@ -1,10 +1,5 @@
 from django.contrib import admin
-from .models import (
-    CommissionType,
-    Commission,
-    Job,
-    JobApplication
-)
+from .models import CommissionType, Commission, Job, JobApplication
 
 
 admin.site.register(CommissionType)
