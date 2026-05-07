@@ -3,21 +3,31 @@
 {% block title %}Product List{% endblock %}
 
 {% block body %}
-    <h1>Product List</h1>
-    <br><br>
-    {% for type in producttype_list %}
-        <h2>{{type}}</h2>
-        <p><i>{{type.description}}</i></p> 
-        <p><b>Products of this type: </b></p>
-        <ul>
-            {% for product in type.product_set.all %}
-                <a href="{% url 'product_detail' product.pk %}">
-                <li>{{product}}</li>
-                </a>
-            {% empty %}
-                <li>No products of this type.</li>
-            {% endfor %}
-        </ul>
-        <br><br>
-    {% endfor %}
+<h1>Product List</h1>
+<a href="{% url 'product_create' %}">Create New Product</a>
+
+<h2>Your Products</h2>
+<ul>
+  {% for product in user_products %}
+    <li>
+      <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
+      (Stock: {{ product.stock }})
+      <a href="{% url 'product_update' product.id %}">Edit</a>
+    </li>
+  {% empty %}
+    <li>You have no products.</li>
+  {% endfor %}
+</ul>
+
+<h2>All Products</h2>
+<ul>
+  {% for product in all_products %}
+    <li>
+      <a href="{% url 'product_detail' product.id %}">{{ product.name }}</a>
+      (Stock: {{ product.stock }})
+    </li>
+  {% empty %}
+    <li>No other products available.</li>
+  {% endfor %}
+</ul>
 {% endblock %}
