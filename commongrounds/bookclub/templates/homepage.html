@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Welcome to Common Grounds</h1>
+    <p>Select a community hub to get started:</p>
+    <ul>
+        <li><a href="{% url 'bookclub:book-list' %}">Explore the Book Club</a></li>
+        <!-- Other apps would be linked here -->
+        <li>Merchandise Store (Coming Soon)</li>
+        <li>Local Events (Coming Soon)</li>
+    </ul>
+{% endblock %}
