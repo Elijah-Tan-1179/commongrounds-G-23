@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Borrow {{ book.title }} | Common Grounds{% endblock %}
+
+{% block content %}
+    <h1>Borrowing Request</h1>
+    <div class="book-info">
+        <h3>{{ book.title }}</h3>
+        <p><strong>Author:</strong> {{ book.author }}</p>
+    </div>
+    <hr>
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        {% if user.is_authenticated %}
+            <p><strong>Borrower:</strong> {{ user.profile.display_name }}</p>
+            {% else %}
+            <p>
+                <label for="name">Your Name (Required):</label><br>
+                <input type="text" name="name" id="name" required>
+            </p>
+        {% endif %}
+
+        <p>
+            <label for="date_borrowed">When would you like to borrow this book?</label><br>
+            <input type="date" name="date_borrowed" id="date_borrowed" required>
+        </p>
+
+        <p><small>Note: All books must be returned exactly 14 days after borrowing.</small></p>
+
+        <div style="margin-top: 20px;">
+            <button type="submit">Confirm Borrowing</button>
+            <a href="{% url 'bookclub:book-detail' book.pk %}">Cancel</a>
+        </div>
+    </form>
+{% endblock %}
