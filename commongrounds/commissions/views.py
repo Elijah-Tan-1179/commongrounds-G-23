@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.urls import reverse_lazy
 from accounts.mixins import RoleRequiredMixin
 from .models import Commission, Job, JobApplication
 from .forms import CommissionForm, JobFormSet
@@ -92,7 +93,7 @@ class CommissionCreateView(
         job_formset = context['job_formset']
         if job_formset.is_valid():
             jobs_data = []
-
+            
             for job_form in job_formset:
 
                 if job_form.cleaned_data:
@@ -118,7 +119,6 @@ class CommissionCreateView(
             return redirect(
                 commission.get_absolute_url()
             )
-        
         return self.form_invalid(form)
 
 
@@ -130,16 +130,55 @@ class CommissionUpdateView(
     required_role = 'Commission Maker'
     model = Commission
     form_class = CommissionForm
-    template_name = (
-        'commissions/commission_form.html'
-    )
+    template_name = 'commissions/update.html'
+    context_object_name = 'commission'
 
-    def get_success_url(self):
+    def dispatch(self, request, *args, **kwargs):
+        commission = self.get_object()
+        if commission.maker != request.user.profile:
+            return redirect('commissions:commission_detail', pk=commission.pk)
+        return super().dispatch(request, *args, **kwargs)
 
-        CommissionService.sync_commission_status(
-            self.object
-        )
-        return self.object.get_absolute_url()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['job_formset'] = JobFormSet(
+                self.request.POST,
+                instance=self.object
+            )
+
+        else:
+            context['job_formset'] = JobFormSet(
+                instance=self.object
+            )
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        job_formset = context['job_formset']
+
+        if job_formset.is_valid():
+            self.object = form.save()
+            job_formset.instance = self.object
+            job_formset.save()
+
+            # Update job statuses
+            for job in self.object.jobs.all():
+                accepted_count = job.applications.filter(
+                    status='Accepted'
+                ).count()
+                if accepted_count >= job.manpower_required:
+                    job.status = 'Full'
+                else:
+                    job.status = 'Open'
+
+                job.save()
+            # Sync commission status
+            CommissionService.sync_commission_status(
+                self.object
+            )
+            return redirect(self.object.get_absolute_url())
+        return self.form_invalid(form)
 
 
 @login_required
