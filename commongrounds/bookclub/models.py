@@ -9,8 +9,6 @@ class Genre(models.Model):
         1. Has a uniqe genre name
         2. Has a description without word limit
     """
-
-
     name = models.CharField(max_length=255)
     description = models.TextField()
 
@@ -50,8 +48,8 @@ class Book(models.Model):
         related_name = 'contributions'
     )
     synopsis = models.TextField()
-    publication_year = models.BooleanField()
-    availabe_to_borrow = models.BooleanField(default=True)
+    publication_year = models.IntegerField()
+    available_to_borrow = models.BooleanField(default=True)
 
     # Timestamps for auditing
     created_on = models.DateTimeField(auto_now_add=True)
