@@ -1,6 +1,7 @@
 from django.db import transaction
 from .models import Commission, Job, JobApplication
 
+
 class CommissionService:
     @staticmethod
     def create_commission(author, data, jobs_data):

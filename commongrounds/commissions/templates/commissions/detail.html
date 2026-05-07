@@ -28,7 +28,7 @@
                     </button>
                 </form>
             {% elif commission.maker == user.profile %}
-                <a href="{% url 'commissions:update' commission.pk %}">Edit Commission</a>
+                <a href="{% url 'commissions:commission_update' commission.pk %}">Edit Commission</a>
             {% endif %}
         </li>
     {% endfor %}

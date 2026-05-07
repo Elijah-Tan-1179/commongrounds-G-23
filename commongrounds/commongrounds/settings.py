@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'commongrounds-g-23-production.up.railway.app',
+    '127.0.0.1',
+    'localhost',
 ]
 
 

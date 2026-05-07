@@ -1,7 +1,7 @@
 from django import forms
 from .models import Commission, Job, JobApplication
 
-class CommissionForm(forms.ModelModel):
+class CommissionForm(forms.ModelForm):
     class Meta:
         model = Commission
         # Maker is excluded because it is set automatically in the view
