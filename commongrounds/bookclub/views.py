@@ -6,6 +6,7 @@ from datetime import timedelta
 
 from .models import Book, BookReview, Bookmark, Borrow
 from .forms import BookFormFactory
+from accounts.mixins import RoleRequiredMixin
 
 class BookListView(ListView):
     """
@@ -13,7 +14,7 @@ class BookListView(ListView):
     """
     model = Book
     template_name = 'bookclub/book_list.html'
-    context_object_name = 'all_books'
+    context_object_name = 'all_books'    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -60,13 +61,37 @@ class BookDetailView(DetailView):
             
         context['bookmarks_count'] = self.object.bookmark_set.count()
         return context
+    
+    def post(self, request, *args, **kwargs):
+        book = self.get_object()
+        form_class = BookFormFactory.get_form("review")
 
-class BookCreateView(LoginRequiredMixin, CreateView):
+        if request.user.is_authenticated:
+            form = form_class(request.POST, user_profile=request.user.profile)
+        else:
+            form = form_class(request.POST)
+
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.book = book
+            if not request.user.is_authenticated:
+                review.anon_reviewer = "Anonymous"
+            review.save()
+            return redirect('bookclub:book-detail', pk=book.pk)
+
+        # Re-render page with form errors if invalid
+        context = self.get_context_data(object=book)
+        context['review_form'] = form
+        return self.render_to_response(context)
+
+
+class BookCreateView(RoleRequiredMixin, LoginRequiredMixin, CreateView):
     """
     Allows 'Book Contributors' to add new books. Uses the Factory Method
     """
     model = Book
     template_name = 'bookclub/book_form.html'
+    required_role = 'Book Contributor'
 
     def get_form_class(self):
         # Obtain form exclusively through the factory
@@ -81,12 +106,13 @@ class BookCreateView(LoginRequiredMixin, CreateView):
         # Redirect to the created object's detail view
         return reverse('bookclub:book-detail', kwargs={'pk': self.object.pk})
 
-class BookUpdateView(LoginRequiredMixin, UpdateView):
+class BookUpdateView(RoleRequiredMixin, LoginRequiredMixin, UpdateView):
     """
     Updates book details while excluding the contributor field
     """
     model = Book
     template_name = 'bookclub/book_form.html'
+    required_role = 'Book Contributor'
 
     def get_form_class(self):
         return BookFormFactory.get_form("update")

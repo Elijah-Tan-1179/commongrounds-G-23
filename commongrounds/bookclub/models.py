@@ -51,7 +51,7 @@ class Book(models.Model):
     )
     synopsis = models.TextField()
     publication_year = models.BooleanField()
-    availabe_to_borrow = models.BooleanField(default=True)
+    available_to_borrow = models.BooleanField(default=True)
 
     # Timestamps for auditing
     created_on = models.DateTimeField(auto_now_add=True)
@@ -64,6 +64,7 @@ class Book(models.Model):
     def __str__(self):
         # return string representation of the book title
         return self.title
+
 
 class BookReview(models.Model):
     """
