@@ -1,40 +1,91 @@
 from django.db import transaction
+from django.db.models import Count
 from .models import Commission, Job, JobApplication
 
 
 class CommissionService:
+    # Comm maker
     @staticmethod
+    @transaction.atomic
     def create_commission(author, data, jobs_data):
-        with transaction.atomic():
-            commission = Commission.objects.create(maker=author, **data)
-            for job_info in jobs_data:
-                Job.objects.create(commission=commission, **job_info)
-            return commission
+        commission = Commission.objects.create(
+            maker=author,
+            **data
+        )
 
+        for job_data in jobs_data:
+            Job.objects.create(
+                commission=commission,
+                **job_data
+            )
+
+        return commission
+
+    # Job attacher
     @staticmethod
     def apply_to_job(applicant, job):
-        if job.status == 'Full':
-            return None
-        if JobApplication.objects.filter(job=job, applicant=applicant).exists():
-            return None
-        return JobApplication.objects.create(job=job, applicant=applicant)
+        existing = JobApplication.objects.filter(
+            applicant=applicant,
+            job=job
+        ).exists()
 
+        if existing:
+            raise ValueError(
+                'You already applied to this job.'
+            )
+
+        accepted_count = JobApplication.objects.filter(
+            job=job,
+            status=JobApplication.STATUS_ACCEPTED
+        ).count()
+
+        if accepted_count >= job.manpower_required:
+            raise ValueError(
+                'This job is already full.'
+            )
+
+        application = JobApplication.objects.create(
+            applicant=applicant,
+            job=job
+        )
+        return application
+
+    # sync 
     @staticmethod
     def sync_commission_status(commission):
-        all_jobs_full = all(job.status == 'Full' for job in commission.jobs.all())
-        if all_jobs_full:
-            commission.status = 'Full'
-            commission.save()
+        jobs = commission.jobs.all()
+        if not jobs.exists():
+            return
 
+        all_full = all(
+            job.status == Job.STATUS_FULL
+            for job in jobs
+        )
+
+        if all_full:
+            commission.status = Commission.STATUS_FULL
+        else:
+            commission.status = Commission.STATUS_OPEN
+
+        commission.save()
+
+    # Comm data
     @staticmethod
     def get_commission_summary(commission):
         jobs = commission.jobs.all()
-        total = sum(j.manpower_required for j in jobs)
+        total_manpower = sum(
+            job.manpower_required
+            for job in jobs
+        )
+
         accepted = JobApplication.objects.filter(
-            job__commission=commission, 
-            status='Accepted'
+            job__commission=commission,
+            status=JobApplication.STATUS_ACCEPTED
         ).count()
+
+        open_manpower = total_manpower - accepted
+
         return {
-            'total_manpower': total,
-            'open_manpower': total - accepted
+            'total_manpower': total_manpower,
+            'open_manpower': open_manpower
         }
