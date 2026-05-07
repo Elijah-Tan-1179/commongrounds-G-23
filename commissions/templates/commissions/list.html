@@ -1,0 +1,33 @@
+<h2>Commissions</h2>
+<a href="{% url 'commissions:create' %}">Create New Commission</a>
+
+{% if user.is_authenticated %}
+    <h3>Commissions Created by You</h3>
+    <ul>
+        {% for comm in user_created %}
+            <li><a href="{{ comm.get_absolute_url }}">{{ comm.title }}</a> ({{ comm.status }})</li>
+        {% empty %}
+            <p>You haven't created any commissions yet.</p>
+        {% endfor %}
+    </ul>
+
+    <h3>Commissions You Applied To</h3>
+    <ul>
+        {% for comm in user_applied %}
+            <li><a href="{{ comm.get_absolute_url }}">{{ comm.title }}</a> ({{ comm.status }})</li>
+        {% empty %}
+            <p>You haven't applied to any commissions yet.</p>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<hr>
+<h3>All Commissions</h3>
+<ul>
+    {% for comm in commissions %}
+        {# Filter out user's own items if they are already displayed above #}
+        {% if comm not in user_created and comm not in user_applied %}
+            <li><a href="{{ comm.get_absolute_url }}">{{ comm.title }}</a> - {{ comm.status }} (Created: {{ comm.created_on }})</li>
+        {% endif %}
+    {% endfor %}
+</ul>
