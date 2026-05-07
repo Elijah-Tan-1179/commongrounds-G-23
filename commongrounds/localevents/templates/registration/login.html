@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Common Grounds</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .form-card {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #4CAF50;
+            margin-top: 0;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .actions {
+            margin-top: 20px;
+        }
+        button, .link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover, .link:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: #b00020;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-card">
+        <h1>Login</h1>
+        {% if form.errors %}
+            <div class="error">Invalid username or password.</div>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <label for="id_username">Username</label>
+            <input type="text" name="username" id="id_username" required>
+            <label for="id_password">Password</label>
+            <input type="password" name="password" id="id_password" required>
+            <div class="actions">
+                <button type="submit">Login</button>
+                <a href="{% url 'localevents:event_list' %}" class="link">Back</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

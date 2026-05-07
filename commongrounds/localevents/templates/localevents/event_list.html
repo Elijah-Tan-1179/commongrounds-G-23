@@ -12,6 +12,25 @@
             padding: 20px;
             background-color: #f5f5f5;
         }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .navbar a { color: white; text-decoration: none; margin-left: 12px; }
+        .navbar a:hover { text-decoration: underline; }
+        .navbar .user-info { font-size: 0.9em; }
+        .navbar form { display: inline; margin: 0; }
+        .navbar button {
+            background: none; border: 1px solid white; color: white;
+            padding: 4px 12px; border-radius: 4px; cursor: pointer; margin-left: 12px;
+        }
+        .navbar button:hover { background-color: #45a049; }
         h1 {
             color: #333;
             border-bottom: 3px solid #4CAF50;
@@ -59,9 +78,69 @@
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <a href="{% url 'localevents:event_list' %}">🌿 Common Grounds</a>
+        <div class="user-info">
+            {% if user.is_authenticated %}
+                Hi, {{ user.username }}
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
     <h1>Local Events</h1>
+    {% if can_create %}
+        <p>
+            <a href="{% url 'localevents:event_create' %}">+ Create Event</a>
+        </p>
+    {% endif %}
+
+    {% if created_events %}
+        <h2>Your Created Events</h2>
+        <div class="event-list">
+            {% for event in created_events %}
+                <div class="event-card">
+                    <h2><a href="{% url 'localevents:event_detail' event.pk %}">{{ event.title }}</a></h2>
+                    {% if event.category %}
+                        <p><strong>Category:</strong> {{ event.category.name }}</p>
+                    {% endif %}
+                    <p>{{ event.description|truncatewords:30 }}</p>
+                    <div class="event-meta">
+                        <p><strong>Location:</strong> {{ event.location }}</p>
+                        <p><strong>Start:</strong> {{ event.start_time|date:"M d, Y H:i" }}</p>
+                        <p><strong>Status:</strong> {{ event.status }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if signed_up_events %}
+        <h2>Your Signed Up Events</h2>
+        <div class="event-list">
+            {% for event in signed_up_events %}
+                <div class="event-card">
+                    <h2><a href="{% url 'localevents:event_detail' event.pk %}">{{ event.title }}</a></h2>
+                    {% if event.category %}
+                        <p><strong>Category:</strong> {{ event.category.name }}</p>
+                    {% endif %}
+                    <p>{{ event.description|truncatewords:30 }}</p>
+                    <div class="event-meta">
+                        <p><strong>Location:</strong> {{ event.location }}</p>
+                        <p><strong>Start:</strong> {{ event.start_time|date:"M d, Y H:i" }}</p>
+                        <p><strong>Status:</strong> {{ event.status }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     
     {% if events %}
+        <h2>All Events</h2>
         <div class="event-list">
             {% for event in events %}
                 <div class="event-card">
@@ -74,11 +153,14 @@
                         <p><strong>Location:</strong> {{ event.location }}</p>
                         <p><strong>Start:</strong> {{ event.start_time|date:"M d, Y H:i" }}</p>
                         <p><strong>End:</strong> {{ event.end_time|date:"M d, Y H:i" }}</p>
+                        <p><strong>Status:</strong> {{ event.status }}</p>
                     </div>
                 </div>
             {% endfor %}
         </div>
-    {% else %}
+    {% endif %}
+
+    {% if not created_events and not signed_up_events and not events %}
         <div class="no-events">
             <p>No events available at the moment.</p>
         </div>
