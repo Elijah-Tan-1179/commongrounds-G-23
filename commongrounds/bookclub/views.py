@@ -65,10 +65,11 @@ class BookDetailView(DetailView):
 
 class BookCreateView(LoginRequiredMixin, CreateView):
     """
-    Allows 'Book Contributors' to add new books. Uses the Factory Method
+    Restricts book creation to logged-in users with the 'Book Contributor' role.
     """
     model = Book
     template_name = 'bookclub/book_form.html'
+    required_role = "Book Contributor"
 
     def get_form_class(self):
         # Obtain form exclusively through the factory
@@ -89,6 +90,7 @@ class BookUpdateView(LoginRequiredMixin, UpdateView):
     """
     model = Book
     template_name = 'bookclub/book_form.html'
+    required_role = "Book Contributor"
 
     def get_form_class(self):
         return BookFormFactory.get_form("update")
