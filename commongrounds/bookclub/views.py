@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect
 from datetime import timedelta
 from datetime import datetime
+from accounts.mixins import RoleRequiredMixin
 
 from .models import Book, BookReview, Bookmark, Borrow
 from .forms import BookFormFactory
