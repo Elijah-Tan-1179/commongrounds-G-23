@@ -21,10 +21,4 @@ class JobForm(forms.ModelForm):
         }
 
 # FIXED
-JobFormSet = inlineformset_factory(
-    Commission,
-    Job,
-    form=JobForm,
-    extra=1,
-    can_delete=True
-)
+JobFormSet = inlineformset_factory(Commission, Job, form=JobForm, extra=1, can_delete=True)

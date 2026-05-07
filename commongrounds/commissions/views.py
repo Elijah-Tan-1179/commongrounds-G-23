@@ -12,7 +12,7 @@ from .services import CommissionService
 
 class CommissionListView(ListView):
     model = Commission
-    template_name = 'commissions/commission_list.html'
+    template_name = 'commissions/list.html'
     context_object_name = 'commissions'
 
     def get_queryset(self):
@@ -47,10 +47,7 @@ class CommissionListView(ListView):
 
 class CommissionDetailView(DetailView):
     model = Commission
-    template_name = (
-        'commissions/commission_detail.html'
-    )
-
+    template_name = 'commissions/detail.html'
     context_object_name = 'commission'
 
     def get_context_data(self, **kwargs):
@@ -65,18 +62,12 @@ class CommissionDetailView(DetailView):
         return context
 
 
-class CommissionCreateView(
-    LoginRequiredMixin,
-    RoleRequiredMixin,
-    CreateView
-):
+class CommissionCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
 
     required_role = 'Commission Maker'
     model = Commission
     form_class = CommissionForm
-    template_name = (
-        'commissions/commission_form.html'
-    )
+    template_name = 'commissions/create.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -93,7 +84,7 @@ class CommissionCreateView(
         job_formset = context['job_formset']
         if job_formset.is_valid():
             jobs_data = []
-            
+
             for job_form in job_formset:
 
                 if job_form.cleaned_data:
@@ -122,11 +113,7 @@ class CommissionCreateView(
         return self.form_invalid(form)
 
 
-class CommissionUpdateView(
-    LoginRequiredMixin,
-    RoleRequiredMixin,
-    UpdateView
-):
+class CommissionUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
     required_role = 'Commission Maker'
     model = Commission
     form_class = CommissionForm
