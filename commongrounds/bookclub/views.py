@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect
 from datetime import timedelta
+from datetime import datetime
 
 from .models import Book, BookReview, Bookmark, Borrow
 from .forms import BookFormFactory
@@ -107,10 +108,31 @@ class BookBorrowView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         book = get_object_or_404(Book, pk=self.kwargs['pk'])
-        borrow_date = request.POST.get('date_borrowed')
+        borrow_date_str = request.POST.get('date_borrowed')
         
-        # Return date is always 14 days from borrowing
+        #  Convert string from HTML input to a Python date object
+        borrow_date = datetime.strptime(borrow_date_str, '%Y-%m-%d').date()
+        
+        # Requirement: Return date is exactly 14 days from borrowing 
         return_date = borrow_date + timedelta(days=14)
         
-        # Save borrowing record logic goes here
+        # Create the Borrow record
+        new_borrow = Borrow(
+            book=book,
+            date_borrowed=borrow_date,
+            date_to_return=return_date
+        )
+        
+        # Attribution logic 
+        if request.user.is_authenticated:
+            new_borrow.borrower = request.user.profile
+        else:
+            new_borrow.name = request.POST.get('name')
+            
+        new_borrow.save()
+        
+        # Update book availability status
+        book.available_to_borrow = False
+        book.save()
+        
         return redirect('bookclub:book-detail', pk=book.pk)
