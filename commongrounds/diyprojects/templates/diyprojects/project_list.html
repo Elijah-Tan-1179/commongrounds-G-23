@@ -1,0 +1,51 @@
+{% extends 'diyprojects/base.html' %}
+
+{% block title %}Project List{% endblock %}
+
+{% block body %}
+    <h1>Project List</h1>
+    <a href="{% url 'home' %}">Back to home</a><br>
+    <a href="{% url 'diyprojects:project_create' %}">Add a Project</a>
+    <hr>
+
+    {% if user.is_authenticated %}
+        {% if created_projects %}
+            <h2>Projects created</h2>
+            <ul>
+                {% for project in created_projects %}
+                    <li><a href="{% url 'diyprojects:project_detail' project.pk %}">{{ project.title }}</a></li>
+                {% endfor %}
+            </ul>
+            <hr>
+        {% endif %}
+
+        {% if favorited_projects %}
+            <h2>Projects favorited</h2>
+            <ul>
+                {% for project in favorited_projects %}
+                    <li><a href="{% url 'diyprojects:project_detail' project.pk %}">{{ project.title }}</a></li>
+                {% endfor %}
+            </ul>
+            <hr>
+        {% endif %}
+
+        {% if reviewed_projects %}
+            <h2>Projects reviewed</h2>
+            <ul>
+                {% for project in reviewed_projects %}
+                    <li><a href="{% url 'diyprojects:project_detail' project.pk %}">{{ project.title }}</a></li>
+                {% endfor %}
+            </ul>
+            <hr>
+        {% endif %}
+    {% endif %}
+
+    <h2>All Projects</h2>
+    <ul>
+        {% for project in all_projects %}
+            <li><a href="{% url 'diyprojects:project_detail' project.pk %}">{{ project.title }}</a></li>
+        {% empty %}
+            <li>No projects yet.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

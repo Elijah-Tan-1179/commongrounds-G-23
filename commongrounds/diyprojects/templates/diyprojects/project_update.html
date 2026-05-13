@@ -1,0 +1,14 @@
+{% extends 'diyprojects/base.html' %}
+
+{% block title %}Edit {{ project.title }}{% endblock %}
+
+{% block body %}
+    <a href="{% url 'diyprojects:project_detail' project.pk %}">← Back to Project</a>
+    <h1>Edit: {{ project.title }}</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Changes</button>
+    </form>
+{% endblock %}

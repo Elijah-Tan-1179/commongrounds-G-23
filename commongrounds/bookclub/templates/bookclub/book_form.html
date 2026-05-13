@@ -1,0 +1,25 @@
+{% extends 'bookclub/base.html' %}
+
+{% block title %}
+    {% if object %}Edit {{ object.title }}{% else %}Contribute a Book{% endif %} | Common Grounds
+{% endblock %}
+
+{% block content %}
+    <h1>{% if object %}Update Book Details{% else %}Contribute a New Book{% endif %}</h1>
+    <p>Please fill out the form below to share a book with the community.</p>
+    <hr>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <div style="margin-top: 20px;">
+            <button type="submit">
+                {% if object %}Save Changes{% else %}Add Book{% endif %}
+            </button>
+            <a href="{% if object %}{% url 'bookclub:book-detail' object.pk %}{% else %}{% url 'bookclub:book-list' %}{% endif %}">
+                Cancel
+            </a>
+        </div>
+    </form>
+{% endblock %}

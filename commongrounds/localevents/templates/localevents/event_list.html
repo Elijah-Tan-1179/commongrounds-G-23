@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Events - Common Grounds</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .navbar a { color: white; text-decoration: none; margin-left: 12px; }
+        .navbar a:hover { text-decoration: underline; }
+        .navbar .user-info { font-size: 0.9em; }
+        .navbar form { display: inline; margin: 0; }
+        .navbar button {
+            background: none; border: 1px solid white; color: white;
+            padding: 4px 12px; border-radius: 4px; cursor: pointer; margin-left: 12px;
+        }
+        .navbar button:hover { background-color: #45a049; }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .event-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .event-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .event-card h2 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+        .event-card a {
+            text-decoration: none;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .event-card a:hover {
+            text-decoration: underline;
+        }
+        .event-meta {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .no-events {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="{% url 'localevents:event_list' %}">🌿 Common Grounds</a>
+        <div class="user-info">
+            {% if user.is_authenticated %}
+                Hi, {{ user.username }}
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+    <h1>Local Events</h1>
+    {% if can_create %}
+        <p>
+            <a href="{% url 'localevents:event_create' %}">+ Create Event</a>
+        </p>
+    {% endif %}
+
+    {% if created_events %}
+        <h2>Your Created Events</h2>
+        <div class="event-list">
+            {% for event in created_events %}
+                <div class="event-card">
+                    <h2><a href="{% url 'localevents:event_detail' event.pk %}">{{ event.title }}</a></h2>
+                    {% if event.category %}
+                        <p><strong>Category:</strong> {{ event.category.name }}</p>
+                    {% endif %}
+                    <p>{{ event.description|truncatewords:30 }}</p>
+                    <div class="event-meta">
+                        <p><strong>Location:</strong> {{ event.location }}</p>
+                        <p><strong>Start:</strong> {{ event.start_time|date:"M d, Y H:i" }}</p>
+                        <p><strong>Status:</strong> {{ event.status }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if signed_up_events %}
+        <h2>Your Signed Up Events</h2>
+        <div class="event-list">
+            {% for event in signed_up_events %}
+                <div class="event-card">
+                    <h2><a href="{% url 'localevents:event_detail' event.pk %}">{{ event.title }}</a></h2>
+                    {% if event.category %}
+                        <p><strong>Category:</strong> {{ event.category.name }}</p>
+                    {% endif %}
+                    <p>{{ event.description|truncatewords:30 }}</p>
+                    <div class="event-meta">
+                        <p><strong>Location:</strong> {{ event.location }}</p>
+                        <p><strong>Start:</strong> {{ event.start_time|date:"M d, Y H:i" }}</p>
+                        <p><strong>Status:</strong> {{ event.status }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    {% if events %}
+        <h2>All Events</h2>
+        <div class="event-list">
+            {% for event in events %}
+                <div class="event-card">
+                    <h2><a href="{% url 'localevents:event_detail' event.pk %}">{{ event.title }}</a></h2>
+                    {% if event.category %}
+                        <p><strong>Category:</strong> {{ event.category.name }}</p>
+                    {% endif %}
+                    <p>{{ event.description|truncatewords:30 }}</p>
+                    <div class="event-meta">
+                        <p><strong>Location:</strong> {{ event.location }}</p>
+                        <p><strong>Start:</strong> {{ event.start_time|date:"M d, Y H:i" }}</p>
+                        <p><strong>End:</strong> {{ event.end_time|date:"M d, Y H:i" }}</p>
+                        <p><strong>Status:</strong> {{ event.status }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if not created_events and not signed_up_events and not events %}
+        <div class="no-events">
+            <p>No events available at the moment.</p>
+        </div>
+    {% endif %}
+</body>
+</html>

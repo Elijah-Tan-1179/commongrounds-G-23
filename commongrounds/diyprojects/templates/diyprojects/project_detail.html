@@ -1,0 +1,81 @@
+{% extends 'diyprojects/base.html' %}
+
+{% block title %}{{project.title}}{% endblock %}
+
+{% block body %}
+    <a href="{% url 'diyprojects:project_list' %}">
+        <li>Back to Project List</li>
+    </a>
+    <h2>{{ project.title }}</h2>
+    <p><b>Creator: </b>{{ project.creator.display_name }}</p>
+    <p><b>Category: </b>{{ project.category.name }}</p>
+    <p><b>Description: </b>{{ project.description }}</p>
+    <p><b>Materials: </b>{{ project.materials }}</p>
+    <p><b>Steps: </b>{{ project.steps }}</p>
+    <p><b>Created on: </b>{{ project.created_on }}</p>
+    <p><b>Last updated on: </b>{{ project.updated_on }}</p>
+
+     {% if is_creator %}
+        <a href="{% url 'diyprojects:project_update' project.pk %}">Edit Project</a>
+    {% endif %}
+
+    <hr>
+
+    <h2>Rating</h2>
+    <p><b>Average Rating:</b>
+        {% if avg_rating %}
+            {{ avg_rating|floatformat:1 }} / 10
+        {% else %}
+            No ratings yet.
+        {% endif %}
+    </p>
+
+    {% if user.is_authenticated %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="rating">
+            {{ rating_form.as_p }}
+            <button type="submit">Submit Rating</button>
+        </form>
+    {% endif %}
+
+    <hr>
+
+    <h2>Favorites</h2>
+    <p><b>Favorited by:</b> {{ favorite_count }} user(s)</p>
+
+    {% if user.is_authenticated %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="favorite">
+            {{ favorite_form.as_p }}
+            <button type="submit">Favorite this Project</button>
+        </form>
+    {% endif %}
+
+    <hr>
+
+    <h2>Reviews</h2>
+    {% for review in reviews %}
+        <div>
+            <p><b>{{ review.reviewer.display_name }}</b></p>
+            <p>{{ review.comment }}</p>
+            {% if review.image %}
+                <img src="{{ review.image.url }}" alt="Review image" width="200">
+            {% endif %}
+        </div>
+        <hr>
+    {% empty %}
+        <p>No reviews yet.</p>
+    {% endfor %}
+
+    {% if user.is_authenticated %}
+        <h3>Leave a Review</h3>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="review">
+            {{ review_form.as_p }}
+            <button type="submit">Submit Review</button>
+        </form>
+    {% endif %}
+{% endblock %}

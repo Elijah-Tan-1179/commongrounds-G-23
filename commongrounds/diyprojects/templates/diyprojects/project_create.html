@@ -1,0 +1,14 @@
+{% extends 'diyprojects/base.html' %}
+
+{% block title %}Add Project{% endblock %}
+
+{% block body %}
+    <a href="{% url 'diyprojects:project_list' %}">← Back to Project List</a>
+    <h1>Add a Project</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Create Project</button>
+    </form>
+{% endblock %}

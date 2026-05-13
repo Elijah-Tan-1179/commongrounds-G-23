@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<h2>Common Grounds</h2>
+
+    {% if user.is_authenticated %}
+        <p>Logged in as: {{ user.profile.display_name }}.</p>
+        <a href="{% url 'accounts:profile_update' user.username %}">Edit Profile</a>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+    {% endif %}
+
+<nav>
+    <ul>
+        <li><a href="{% url 'merchstore:product_list' %}">Merchandise Store</a></li>
+        <li><a href="{% url 'localevents:event_list' %}">Local Events</a></li>
+        <li><a href="{% url 'bookclub:book-list' %}">Book Club</a></li>
+        <li><a href="{% url 'diyprojects:project_list' %}">DIY Projects</a></li>
+        <li><a href="{% url 'commissions:commission_list' %}">Commissions</a></li>
+    </ul>
+</nav>
+
+<hr>
+{% endblock %}

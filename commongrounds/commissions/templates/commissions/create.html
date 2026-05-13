@@ -1,0 +1,27 @@
+{% extends 'commissions/base.html' %}
+{% block content %}
+
+    <a href="{% url 'commissions:commission_list' %}">← Back to Commission List</a>
+    <h1>Create Commission</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <hr>
+
+        <h2>Jobs</h2>
+
+        {{ job_formset.management_form }}
+        {% for job_form in job_formset %}
+            {{ job_form.as_p }}
+
+        <hr>
+            
+        {% endfor %}
+
+        <button type="submit">
+            Create Commission
+        </button>
+
+    </form>
+{% endblock %}

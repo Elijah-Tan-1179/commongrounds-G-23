@@ -1,0 +1,111 @@
+{% extends 'commissions/base.html' %}
+
+{% block content %}
+
+    <a href="{% url 'commissions:commission_list' %}">← Back to Project List</a>
+
+    <h1>{{ commission.title }}</h1>
+
+    <p>{{ commission.description }}</p>
+
+    <p>
+        Type:
+        {{ commission.type }}
+    </p>
+
+    <p>
+        Status:
+        {{ commission.status }}
+    </p>
+
+    <p>
+        Total manpower:
+        {{ total_manpower }}
+    </p>
+
+    <p>
+        Open manpower:
+        {{ open_manpower }}
+    </p>
+
+    {% if user.is_authenticated %}
+
+        {% if user.profile == commission.maker %}
+
+            <a href="{% url 'commissions:commission_update' commission.id %}">
+                Edit Commission
+            </a>
+
+        {% endif %}
+
+    {% endif %}
+
+    <hr>
+
+    <h2>Jobs</h2>
+
+    {% for item in jobs_with_status %}
+
+        <div>
+
+            <h3>
+                {{ item.job.role }}
+            </h3>
+
+            <p>
+                Status:
+                {{ item.job.status }}
+            </p>
+
+            <p>
+                Required:
+                {{ item.job.manpower_required }}
+            </p>
+
+            <p>
+                Accepted:
+                {{ item.accepted_count }}
+            </p>
+
+            {% if user.is_authenticated %}
+
+                {% if user.profile != commission.maker %}
+                    {% if item.is_full %}
+                        <button disabled>
+                            Job Full
+                        </button>
+
+                    {% else %}
+                        <form
+                            method="post"
+                            action="{% url 'commissions:apply_to_job' item.job.id %}"
+                        >
+
+                            {% csrf_token %}
+
+                            <button type="submit">
+                                Apply to Job
+                            </button>
+
+                        </form>
+                    {% endif %}
+                {% endif %}
+            {% else %}
+
+                <p>
+                    Login to apply.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+        <hr>
+
+    {% empty %}
+
+        <p>No jobs available.</p>
+
+    {% endfor %}
+
+{% endblock %}
